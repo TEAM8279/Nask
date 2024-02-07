@@ -231,7 +231,7 @@ function routeRequest($requestUri) {
     $tokens = explode('/', $requestUri);
 
     // Assuming the URI is in the format /endpoint
-    $endpoint = $tokens[1];
+    $endpoint = end($tokens);
 
     switch ($endpoint) {
         case 'token':

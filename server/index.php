@@ -119,9 +119,15 @@ function update_notes($token, $notes) {
 
     // Validate the structure of each note object
     foreach ($decoded_notes as $note) {
-        if (!isset($note['timestamp']) || !isset($note['title']) || !isset($note['note'])) {
-            echo json_encode(array("error" => "Each note object must contain 'timestamp', 'title', and 'note'"));
+        if (!isset($note['timestamp']) || !isset($note['title']) || !isset($note['note']) || !isset($note['tags']) || !is_array($note['tags'])) {
+            echo json_encode(array("error" => "Each note object must contain 'timestamp', 'title', 'note', and 'tags' (an array of strings)"));
             return;
+        }
+        foreach ($note['tags'] as $tag) {
+            if (!is_string($tag)) {
+                echo json_encode(array("error" => "Each tag within 'tags' must be a string"));
+                return;
+            }
         }
     }
 
@@ -156,6 +162,7 @@ function update_notes($token, $notes) {
     // Return a success message
     echo json_encode(array("message" => "Notes updated successfully"));
 }
+
 
 
 function update_tasks($token, $tasks) {

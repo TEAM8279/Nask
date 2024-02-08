@@ -1,5 +1,11 @@
 <?php
 
+header('Access-Control-Allow-Origin: *');
+
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+
+header("Access-Control-Allow-Headers: X-Requested-With, Authorization, Content-Type");
+
 class Database extends SQLite3
 {
     function __construct() {
@@ -218,7 +224,11 @@ function update_tasks($token, $tasks) {
 function routeRequest($requestUri) {
     // Extracting the authorization header
     $headers = apache_request_headers();
-    $authorizationHeader = isset($headers['authorization']) ? $headers['authorization'] : '';
+    $authorizationHeader = isset($headers['Authorization']) ? $headers['Authorization'] : '';
+
+    if ($authorizationHeader == '') {
+        $authorizationHeader = isset($headers['authorization']) ? $headers['authorization'] : '';
+    }
 
     // Check if the authorization header is present and starts with 'Bearer '
     if (strpos($authorizationHeader, 'Bearer ') === 0) {
@@ -246,6 +256,7 @@ function routeRequest($requestUri) {
             break;
         case 'notes':
             if ($token !== null) {
+                var_dump($_POST);
                 update_notes($token, $_POST['notes']); // Assuming notes are sent via POST
             } else {
                 echo "Access denied. Token required for this endpoint.";

@@ -8,7 +8,8 @@ export const useDataStores = defineStore('data', {
         {
             storedNotes: [],
             storedTasks: [],
-            tokenInitialised: true
+            tokenInitialised: true,
+            networkFailed: false
         }
     ),
     getters: {
@@ -20,6 +21,14 @@ export const useDataStores = defineStore('data', {
         tasks: state => state.storedTasks.filter(t => t.done===false),
     },
     actions: {
+        checkNetwork() {
+            console.log("check networks")
+            axios.get("https://nask.8279.ch/api/cĥeck").then(() => {
+                this.networkFailed = false;
+            }).catch(() => {
+                this.networkFailed = true;
+            })
+        },
         init () {
             const token = this.getToken();
             if (token) {
@@ -29,6 +38,13 @@ export const useDataStores = defineStore('data', {
                     console.log(r)
                     this.storedNotes = r.data.notes
                     this.storedTasks = r.data.tasks
+                    localStorage.setItem("notes", JSON.stringify(this.storedNotes))
+                    localStorage.setItem("tasks", JSON.stringify(this.storedTasks))
+                    this.networkFailed = false;
+                }).catch(() => {
+                    this.networkFailed = true;
+                    this.storedNotes = JSON.parse(localStorage.getItem("notes"))
+                    this.storedTasks = JSON.parse(localStorage.getItem("tasks"))
                 });
             } else {
                 this.tokenInitialised = false;
@@ -52,7 +68,11 @@ export const useDataStores = defineStore('data', {
                     localStorage.setItem("token", token);
                     this.tokenInitialised = true;
                     this.init();
+                    this.networkFailed = false;
                     router.push('/')
+                }).catch(() => {
+                    this.networkFailed = true;
+                    this.init()
                 });
             } else {
                 localStorage.setItem("token", token);
@@ -80,6 +100,10 @@ export const useDataStores = defineStore('data', {
                 }).then((r) => {
                     console.log(r)
                     this.init()
+                    this.networkFailed = false;
+                }).catch(() => {
+                    this.networkFailed = true;
+                    this.init()
                 });
             }
         },
@@ -95,6 +119,10 @@ export const useDataStores = defineStore('data', {
                     }
                 }).then((r) => {
                     console.log(r)
+                    this.init()
+                    this.networkFailed = false;
+                }).catch(() => {
+                    this.networkFailed = true;
                     this.init()
                 });
             }

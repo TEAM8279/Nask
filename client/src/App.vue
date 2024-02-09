@@ -5,6 +5,9 @@
     <router-link to="/tasks">Tasks</router-link>
     <router-link to="/settings">Settings</router-link>
   </nav>
+  <div class="nonetwork" v-if="networkFailed">
+    ⚠ no network = no save
+  </div>
 </template>
 
 <style lang="scss">
@@ -33,11 +36,29 @@ nav {
     text-decoration: underline;
   }
 }
+
+.nonetwork {
+  background-color: red;
+  font-size: 18px;
+  width: 220px;
+  padding: 5px;
+  border-radius: 4px;
+  margin: auto;
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 </style>
 <script setup>
 import {useDataStores} from "@/stores/DataStore";
+import {storeToRefs} from "pinia";
 
 const dataStore = useDataStores();
+
+const {networkFailed} = storeToRefs(dataStore)
+
+setInterval(dataStore.checkNetwork, 1000)
 
 dataStore.init();
 </script>

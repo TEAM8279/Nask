@@ -79,6 +79,7 @@ export const useDataStores = defineStore('data', {
                     }
                 }).then((r) => {
                     console.log(r)
+                    this.init()
                 });
             }
         },
@@ -94,6 +95,7 @@ export const useDataStores = defineStore('data', {
                     }
                 }).then((r) => {
                     console.log(r)
+                    this.init()
                 });
             }
         },

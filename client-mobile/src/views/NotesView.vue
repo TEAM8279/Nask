@@ -4,8 +4,17 @@
       <button @click="edition = false;oldNote={};newNote={}">⧼</button>
       <button @click="edition=false;dataStore.updateNotes(oldNote, newNote);">✓</button>
     </div>
-    <input type="text" v-model="newNote.title" class="title">
-    <textarea v-model="newNote.note" class="content"></textarea>
+    <input
+        type="text"
+        v-model="newNote.title"
+        class="title"
+        @focusout="dataStore.updateNotes(oldNote, newNote);oldNote={...newNote}"
+    >
+    <textarea
+        v-model="newNote.note"
+        class="content"
+        @focusout="dataStore.updateNotes(oldNote, newNote);oldNote={...newNote}"
+    ></textarea>
   </div>
   <div class="main">
     <div class="head">

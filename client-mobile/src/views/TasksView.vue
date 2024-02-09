@@ -12,15 +12,15 @@
     <div class="body">
       <div class="task" v-for="task in tasks" :key="task.key">
         <div class="tinfo">
-          <input type="checkbox" v-model="task.done" @change="dataStore.updateTasks()">
-          <input type="text" v-model="task.task" @focusout="dataStore.updateTasks()">
+          <input type="checkbox" v-model="task.done" @click.prevent="task.done = true; dataStore.updateTasks()">
+          <input type="text" v-model="task.task" @mouseleave="dataStore.updateTasks()" @focusout="dataStore.updateTasks()">
         </div>
         <p class="date">{{ new Date(task.timestamp*1000).toUTCString().slice(0, 16) }}</p>
       </div>
       <p>Done ({{doneTasksCounter}})</p>
       <div class="task done" v-for="task in doneTasks" :key="task.key">
         <div class="tinfo">
-          <input type="checkbox" v-model="task.done" @change="dataStore.updateTasks()">
+          <input type="checkbox" v-model="task.done" @click.prevent="task.done=false; dataStore.updateTasks()">
           <h2>{{ task.task }}</h2>
         </div>
         <p class="date">{{ new Date(task.timestamp*1000).toUTCString().slice(0, 16) }}</p>

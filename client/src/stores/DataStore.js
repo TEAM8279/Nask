@@ -22,7 +22,6 @@ export const useDataStores = defineStore('data', {
     },
     actions: {
         checkNetwork() {
-            console.log("check networks")
             axios.get("https://nask.8279.ch/api/cĥeck").then(() => {
                 this.networkFailed = false;
             }).catch(() => {
@@ -35,7 +34,6 @@ export const useDataStores = defineStore('data', {
                 axios.get("https://nask.8279.ch/api/datas", {
                     headers: { Authorization: `Bearer ${token}` }
                 }).then((r) => {
-                    console.log(r)
                     this.storedNotes = r.data.notes
                     this.storedTasks = r.data.tasks
                     localStorage.setItem("notes", JSON.stringify(this.storedNotes))
@@ -60,10 +58,8 @@ export const useDataStores = defineStore('data', {
             return false;
         },
         setToken (token=null) {
-            console.log(token)
             if (token===null) {
                 axios.get("https://nask.8279.ch/api/token").then((r) => {
-                    console.log(r.data)
                     token = r.data.token
                     localStorage.setItem("token", token);
                     this.tokenInitialised = true;
@@ -80,14 +76,7 @@ export const useDataStores = defineStore('data', {
                 router.push('/')
             }
         },
-        updateNotes (oldNote, newNote) {
-            if (oldNote===null) {
-                this.storedNotes.unshift(newNote);
-            } else {
-                let temp = this.storedNotes.find(n => n.title===oldNote.title && n.note===oldNote.note && n.timestamp===oldNote.timestamp)
-                temp.title = newNote.title;
-                temp.note = newNote.note;
-            }
+        updateNotes () {
             const token = this.getToken();
             if (token) {
                 axios.post("https://nask.8279.ch/api/notes",{
@@ -97,8 +86,7 @@ export const useDataStores = defineStore('data', {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data'
                     }
-                }).then((r) => {
-                    console.log(r)
+                }).then(() => {
                     this.init()
                     this.networkFailed = false;
                 }).catch(() => {
@@ -106,6 +94,20 @@ export const useDataStores = defineStore('data', {
                     this.init()
                 });
             }
+        },
+        updateNoteContent (oldNote, newNote) {
+            if (oldNote===null) {
+                this.storedNotes.unshift(newNote);
+            } else {
+                let temp = this.storedNotes.find(n => n.title===oldNote.title && n.note===oldNote.note && n.timestamp===oldNote.timestamp)
+                temp.title = newNote.title;
+                temp.note = newNote.note;
+            }
+
+        },
+        deleteNote(note) {
+            this.storedNotes.splice(this.storedNotes.indexOf(note), 1);
+            this.updateNotes();
         },
         updateTasks () {
             const token = this.getToken();
@@ -117,8 +119,7 @@ export const useDataStores = defineStore('data', {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data'
                     }
-                }).then((r) => {
-                    console.log(r)
+                }).then(() => {
                     this.init()
                     this.networkFailed = false;
                 }).catch(() => {

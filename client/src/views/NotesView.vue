@@ -2,18 +2,18 @@
   <div class="editor" v-if="edition">
     <div class="banner">
       <button @click="edition = false;oldNote={};newNote={}">⧼</button>
-      <button @click="edition=false;dataStore.updateNotes(oldNote, newNote);">✓</button>
+      <button @click="edition=false;dataStore.updateNoteContent(oldNote, newNote);">✓</button>
     </div>
     <input
         type="text"
         v-model="newNote.title"
         class="title"
-        @focusout="dataStore.updateNotes(oldNote, newNote);oldNote={...newNote}"
+        @focusout="dataStore.updateNoteContent(oldNote, newNote);oldNote={...newNote}"
     >
     <textarea
         v-model="newNote.note"
         class="content"
-        @focusout="dataStore.updateNotes(oldNote, newNote);oldNote={...newNote}"
+        @focusout="dataStore.updateNoteContent(oldNote, newNote);oldNote={...newNote}"
     ></textarea>
   </div>
   <div class="main">
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="body">
-      <a class="note" v-for="note in notes" :key="note.key" @click="edition = true; oldNote={...note}; newNote={...note}">
+      <a @pointerdown="holdOnNote" @pointerup="releaseOnNote(note)" class="note" v-for="note in notes" :key="note.key">
         <h2 class="title">{{ note.title }}</h2>
         <p class="extract">{{ note.note }}</p>
         <p class="date">{{ new Date(note.timestamp*1000).toUTCString().slice(0, 16) }}</p>
@@ -138,6 +138,23 @@ const dataStore = useDataStores();
 const edition = ref(false);
 const oldNote = ref({})
 const newNote = ref({})
+const isHolding = ref(0)
+
+const holdOnNote = () => {
+  isHolding.value = Date.now();
+}
+
+const releaseOnNote = (note) => {
+  if ((Date.now() - isHolding.value) > 500) {
+    if(confirm("Delete the note ?")) {
+      dataStore.deleteNote(note)
+    }
+  } else {
+   edition.value = true;
+   oldNote.value = {...note};
+   newNote.value ={...note}
+  }
+}
 
 const {notesCounter, notes} = storeToRefs(dataStore)
 </script>

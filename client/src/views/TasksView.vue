@@ -32,6 +32,7 @@
 <style lang="scss" scoped>
 div.main {
   padding: 10px;
+  width: 100%;
 
   div.head {
     padding-bottom: 20px;

@@ -1,6 +1,13 @@
 <template>
-  <router-view/>
-  <nav>
+  <div class="view">
+    <nav class="laptop">
+      <router-link to="/">Notes</router-link>
+      <router-link to="/tasks">Tasks</router-link>
+      <router-link to="/settings">Settings</router-link>
+    </nav>
+    <router-view/>
+  </div>
+  <nav class="mobile">
     <router-link to="/">Notes</router-link>
     <router-link to="/tasks">Tasks</router-link>
     <router-link to="/settings">Settings</router-link>
@@ -17,16 +24,18 @@
   font-family: "Noto Sans", sans-serif;
 }
 nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  padding: 20px;
-  background-color: #fff;
-  width: calc(100vw - 40px);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  border-top: 1px #000 solid;
+  &.mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 20px;
+    background-color: #fff;
+    width: calc(100vw - 40px);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-top: 1px #000 solid;
+  }
 
   a {
     color: #000;
@@ -48,6 +57,32 @@ nav {
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+div.view {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+
+  nav.laptop {
+    display: none;
+    flex-direction: column;
+    border-right: solid 1px #000;
+
+    a {
+      padding: 20px 20px 0 20px;
+      min-width: 100px;
+    }
+  }
+}
+
+@media screen and (min-width: 512px) {
+  nav.mobile {
+    display: none;
+  }
+  div.view nav.laptop {
+    display: flex;
+  }
 }
 </style>
 <script setup>

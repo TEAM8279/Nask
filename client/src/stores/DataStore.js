@@ -103,7 +103,7 @@ export const useDataStores = defineStore('data', {
                 temp.title = newNote.title;
                 temp.note = newNote.note;
             }
-
+            this.updateNotes()
         },
         deleteNote(note) {
             this.storedNotes.splice(this.storedNotes.indexOf(note), 1);
@@ -134,6 +134,10 @@ export const useDataStores = defineStore('data', {
                 task: "New task",
                 timestamp: Date.now() / 1000
             })
+        },
+        deleteTask(task) {
+            this.storedTasks.splice(this.storedTasks.indexOf(task), 1);
+            this.updateTasks();
         }
     },
 })

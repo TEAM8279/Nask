@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="body">
-      <div class="task" v-for="task in tasks" :key="task.key">
+      <div class="task" v-for="task in tasks" :key="task.key" @pointerdown="holdOnTask" @pointerup="releaseOnTask(task)">
         <div class="tinfo">
           <input type="checkbox" v-model="task.done" @click.prevent="task.done = true; dataStore.updateTasks()">
           <input type="text" v-model="task.task" @mouseleave="dataStore.updateTasks()" @focusout="dataStore.updateTasks()">
@@ -18,7 +18,7 @@
         <p class="date">{{ new Date(task.timestamp*1000).toUTCString().slice(0, 16) }}</p>
       </div>
       <p>Done ({{doneTasksCounter}})</p>
-      <div class="task done" v-for="task in doneTasks" :key="task.key">
+      <div class="task done" v-for="task in doneTasks" :key="task.key" @pointerdown="holdOnTask" @pointerup="releaseOnTask(task)">
         <div class="tinfo">
           <input type="checkbox" v-model="task.done" @click.prevent="task.done=false; dataStore.updateTasks()">
           <h2>{{ task.task }}</h2>
@@ -104,8 +104,23 @@ div.main {
 <script setup>
 import {useDataStores} from "@/stores/DataStore";
 import {storeToRefs} from "pinia";
+import {ref} from "vue";
 
 const dataStore = useDataStores();
 
 const {tasksCounter, tasks, doneTasks, doneTasksCounter} = storeToRefs(dataStore)
+
+const isHolding = ref(0)
+
+const holdOnTask = () => {
+  isHolding.value = Date.now();
+}
+
+const releaseOnTask = (task) => {
+  if ((Date.now() - isHolding.value) > 500) {
+    if(confirm("Delete the task ?")) {
+      dataStore.deleteTask(task);
+    }
+  }
+}
 </script>

@@ -30,6 +30,9 @@
 </template>
 
 <style lang="scss" scoped>
+a, button, input[type="checkbox"] {
+  cursor: pointer;
+}
 div.main {
   padding: 10px;
   width: 100%;

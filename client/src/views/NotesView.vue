@@ -28,15 +28,18 @@
     </div>
     <div class="body">
       <a @pointerdown="holdOnNote" @pointerup="releaseOnNote(note)" class="note" v-for="note in notes" :key="note.key">
-        <h2 class="title">{{ note.title }}</h2>
-        <p class="extract">{{ note.note }}</p>
-        <p class="date">{{ new Date(note.timestamp*1000).toUTCString().slice(0, 16) }}</p>
+          <h2 class="title">{{ note.title }}</h2>
+          <p class="extract">{{ note.note }}</p>
+          <p class="date">{{ new Date(note.timestamp*1000).toUTCString().slice(0, 16) }}</p>
       </a>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+a, button {
+  cursor: pointer;
+}
 .editor {
   position: fixed;
   background-color: white;
@@ -82,7 +85,7 @@
 }
 div.main {
   padding: 10px;
-  width: 100%;
+  width: calc(100% - 20px);
 
   div.head {
     padding-bottom: 20px;
@@ -124,6 +127,12 @@ div.main {
         font-size: 70%;
       }
     }
+  }
+}
+
+@media screen and (min-width: 512px) {
+  div.main {
+    width: calc(100% - 162px);
   }
 }
 </style>

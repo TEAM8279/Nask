@@ -3,7 +3,7 @@
     <div class="head">
       <div class="info">
         <h1>Tasks</h1>
-        <p class="counter">{{ tasksCounter }} tasks to do</p>
+        <p class="counter">{{ name }} - {{ tasksCounter }} tasks to do</p>
       </div>
       <div class="add">
         <button @click="dataStore.addTask()">+</button>
@@ -116,7 +116,7 @@ if (!dataStore.tokenInitialised) {
   router.push('/addtoken')
 }
 
-const {tasksCounter, tasks, doneTasks, doneTasksCounter} = storeToRefs(dataStore)
+const {tasksCounter, tasks, doneTasks, doneTasksCounter, name} = storeToRefs(dataStore)
 
 const isHolding = ref(0)
 

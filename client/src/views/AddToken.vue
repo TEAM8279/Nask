@@ -1,4 +1,14 @@
 <template>
+  <div class="server" v-if="step === 0">
+    <h2>Choose a name</h2>
+    <div class="container boxed">
+      <input type="text" v-model="name">
+      <p>Name of the keeper</p>
+    </div>
+    <nav>
+      <button @click="nameNext">Next</button>
+    </nav>
+  </div>
   <div class="server" v-if="step === 1">
     <h2>Choose a server</h2>
     <div class="container">
@@ -49,19 +59,25 @@ import {ref} from "vue";
 import router from "@/router";
 import {useDataStores} from "@/stores/DataStore";
 
-const step = ref(1);
+const step = ref(0);
 const datastore = useDataStores();
 const serverType = ref("default");
 const tokenType = ref("default");
 const serverUrl = ref("https://");
 const token = ref("");
+const name = ref("");
+
+const nameNext = () => {
+  if (name.value.length > 2) {
+    step.value = 1;
+  }
+}
 
 const serverNext = () => {
   const pattern = /^https:\/\/(?:[\w-]+\.)+[a-z]{2,}(?:\/[\w-./?%&=]*)?$/;
 
   if (pattern.test(serverUrl.value) || serverType.value==='default') {
     step.value = 2;
-    console.log(serverUrl.value)
   } else {
     alert("The url need to be https and valid")
   }
@@ -77,7 +93,7 @@ const tokenNext = () => {
     if (serverType.value==='default') {
       serverUrl.value = null;
     }
-
+    datastore.setName(name.value);
     datastore.setServerUrl(serverUrl.value);
     datastore.setToken(token.value);
     step.value = 3;

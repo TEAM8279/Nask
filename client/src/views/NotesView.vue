@@ -20,7 +20,7 @@
     <div class="head">
       <div class="info">
         <h1>Notes</h1>
-        <p class="counter">{{ notesCounter }} notes</p>
+        <p class="counter">{{ name }} - {{ notesCounter }} notes</p>
       </div>
       <div class="add">
         <button @click="newNote={title: 'New note', note: '', timestamp: Date.now()/1000, tags: []};oldNote=null;edition=true">+</button>
@@ -170,5 +170,5 @@ const releaseOnNote = (note) => {
   }
 }
 
-const {notesCounter, notes} = storeToRefs(dataStore)
+const {notesCounter, notes, name} = storeToRefs(dataStore)
 </script>

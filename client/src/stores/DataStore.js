@@ -11,7 +11,8 @@ export const useDataStores = defineStore('data', {
             tokenInitialised: true,
             networkFailed: false,
             currentServerUrl: "",
-            currentServerToken: ""
+            currentServerToken: "",
+            currentName: ""
         }
     ),
     getters: {
@@ -21,7 +22,8 @@ export const useDataStores = defineStore('data', {
         doneTasksCounter: state => state.storedTasks.filter(t => t.done===true).length,
         doneTasks: state => state.storedTasks.filter(t => t.done===true),
         tasks: state => state.storedTasks.filter(t => t.done===false),
-        token: state => state.currentServerToken
+        token: state => state.currentServerToken,
+        name: state => state.currentName
     },
     actions: {
         checkNetwork() {
@@ -60,9 +62,13 @@ export const useDataStores = defineStore('data', {
             if (token !== null) {
                 this.currentServerToken = token.token;
                 this.currentServerUrl = token.url;
+                this.currentName = token.name;
             } else {
                 this.tokenInitialised = false;
             }
+        },
+        setName(pName) {
+            this.currentName = pName
         },
         setServerUrl(url=null) {
             if (url===null) {
@@ -75,7 +81,7 @@ export const useDataStores = defineStore('data', {
             if (token===null) {
                 axios.get(this.currentServerUrl + "/api/token").then((r) => {
                     token = r.data.token
-                    localStorage.setItem("token", JSON.stringify({token: token, url: this.currentServerUrl}));
+                    localStorage.setItem("token", JSON.stringify({name: this.currentName, token: token, url: this.currentServerUrl}));
                     this.tokenInitialised = true;
                     this.init();
                     this.networkFailed = false;
@@ -85,7 +91,7 @@ export const useDataStores = defineStore('data', {
                     this.init()
                 });
             } else {
-                localStorage.setItem("token", JSON.stringify({token: token, url: this.currentServerUrl}));
+                localStorage.setItem("token", JSON.stringify({name: this.currentName, token: token, url: this.currentServerUrl}));
                 this.init();
                 this.tokenInitialised = true;
                 router.push('/')

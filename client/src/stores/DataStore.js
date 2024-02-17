@@ -25,15 +25,16 @@ export const useDataStores = defineStore('data', {
     },
     actions: {
         checkNetwork() {
-            axios.get(this.currentServerUrl + "/api/cĥeck").then(() => {
-                this.networkFailed = false;
-            }).catch(() => {
-                this.networkFailed = true;
-            })
+            if (this.currentServerUrl !== "") {
+                axios.get(this.currentServerUrl + "/api/cĥeck").then(() => {
+                    this.networkFailed = false;
+                }).catch(() => {
+                    this.networkFailed = true;
+                })
+            }
         },
         init () {
-            this.getToken()
-            this.setCurrentServerUrl()
+            this.getTokenAndUrl()
             if (this.currentServerToken) {
                 axios.get(this.currentServerUrl + "/api/datas", {
                     headers: { Authorization: `Bearer ${this.currentServerToken}` }
@@ -53,16 +54,15 @@ export const useDataStores = defineStore('data', {
                 router.push('/settings')
             }
         },
-        getToken() {
-            const token = localStorage.getItem("token");
-            if (token !== undefined) {
-                this.currentServerToken = token;
+        getTokenAndUrl() {
+            const token = JSON.parse(localStorage.getItem("token"));
+            console.log(token)
+            if (token !== null) {
+                this.currentServerToken = token.token;
+                this.currentServerUrl = token.url;
             } else {
                 this.tokenInitialised = false;
             }
-        },
-        setCurrentServerUrl() {
-            this.currentServerUrl = "https://nask.8279.ch";
         },
         setServerUrl(url=null) {
             if (url===null) {
@@ -75,7 +75,7 @@ export const useDataStores = defineStore('data', {
             if (token===null) {
                 axios.get(this.currentServerUrl + "/api/token").then((r) => {
                     token = r.data.token
-                    localStorage.setItem("token", token);
+                    localStorage.setItem("token", JSON.stringify({token: token, url: this.currentServerUrl}));
                     this.tokenInitialised = true;
                     this.init();
                     this.networkFailed = false;
@@ -85,7 +85,7 @@ export const useDataStores = defineStore('data', {
                     this.init()
                 });
             } else {
-                localStorage.setItem("token", token);
+                localStorage.setItem("token", JSON.stringify({token: token, url: this.currentServerUrl}));
                 this.init();
                 this.tokenInitialised = true;
                 router.push('/')

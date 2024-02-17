@@ -17,7 +17,7 @@ export const useDataStores = defineStore('data', {
     ),
     getters: {
         notesCounter: state => state.storedNotes.length,
-        notes: state => state.storedNotes,
+        notes: state => state.storedNotes.sort((a, b) => {return b.timestamp - a.timestamp}),
         tasksCounter: state => state.storedTasks.filter(t => t.done===false).length,
         doneTasksCounter: state => state.storedTasks.filter(t => t.done===true).length,
         doneTasks: state => state.storedTasks.filter(t => t.done===true),
@@ -122,6 +122,7 @@ export const useDataStores = defineStore('data', {
                 let temp = this.storedNotes.find(n => n.title===oldNote.title && n.note===oldNote.note && n.timestamp===oldNote.timestamp)
                 temp.title = newNote.title;
                 temp.note = newNote.note;
+                temp.timestamp = Date.now() / 1000;
             }
             this.updateNotes()
         },

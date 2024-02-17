@@ -1,8 +1,8 @@
 <template>
   <div class="editor" v-if="edition">
     <div class="banner">
-      <button @click="edition = false;oldNote={};newNote={}">⧼</button>
-      <button @click="edition=false;dataStore.updateNoteContent(oldNote, newNote);">✓</button>
+      <button @click="edition = false;">⧼</button>
+      <button @click="edition=false;">✓</button>
     </div>
     <input
         type="text"

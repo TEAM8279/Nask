@@ -1,13 +1,4 @@
 <template>
-  <div class="tokenEditor" v-if="edition">
-    <form>
-      <label for="token">Use your token</label>
-      <input type="text" name="token" id="token" v-model="token"/>
-      <button type="submit" @click="dataStore.setToken(token); edition=false;">Save</button>
-    </form>
-    <p>Or generate a new one</p>
-    <button @click="dataStore.setToken(); edition=false;">Generate</button>
-  </div>
   <div class="main">
     <div class="head">
       <div class="info">
@@ -18,11 +9,11 @@
       <div class="info">
         <h2>Token</h2>
       </div>
-      <div class="add" v-if="dataStore.getToken() === false">
-        <button>+</button>
+      <div class="add">
+        <!--<button>+</button>-->
       </div>
     </div>
-    <p class="token">{{ dataStore.getToken() }}</p>
+    <p class="token">{{ dataStore.token }}</p>
   </div>
 </template>
 
@@ -116,11 +107,12 @@ div.main {
 }
 </style>
 <script setup>
-import {useDataStores} from "../stores/DataStore";
-import {ref} from "vue";
+import {useDataStores} from "@/stores/DataStore";
+import router from "@/router";
 
 const dataStore = useDataStores()
 
-const edition = ref(!dataStore.tokenInitialised);
-const token = ref("");
+if (!dataStore.tokenInitialised) {
+  router.push('/addtoken')
+}
 </script>

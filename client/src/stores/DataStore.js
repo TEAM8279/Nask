@@ -9,7 +9,9 @@ export const useDataStores = defineStore('data', {
             storedNotes: [],
             storedTasks: [],
             tokenInitialised: true,
-            networkFailed: false
+            networkFailed: false,
+            currentServerUrl: "",
+            currentServerToken: ""
         }
     ),
     getters: {
@@ -19,20 +21,22 @@ export const useDataStores = defineStore('data', {
         doneTasksCounter: state => state.storedTasks.filter(t => t.done===true).length,
         doneTasks: state => state.storedTasks.filter(t => t.done===true),
         tasks: state => state.storedTasks.filter(t => t.done===false),
+        token: state => state.currentServerToken
     },
     actions: {
         checkNetwork() {
-            axios.get("https://nask.8279.ch/api/cĥeck").then(() => {
+            axios.get(this.currentServerUrl + "/api/cĥeck").then(() => {
                 this.networkFailed = false;
             }).catch(() => {
                 this.networkFailed = true;
             })
         },
         init () {
-            const token = this.getToken();
-            if (token) {
-                axios.get("https://nask.8279.ch/api/datas", {
-                    headers: { Authorization: `Bearer ${token}` }
+            this.getToken()
+            this.setCurrentServerUrl()
+            if (this.currentServerToken) {
+                axios.get(this.currentServerUrl + "/api/datas", {
+                    headers: { Authorization: `Bearer ${this.currentServerToken}` }
                 }).then((r) => {
                     this.storedNotes = r.data.notes
                     this.storedTasks = r.data.tasks
@@ -52,14 +56,24 @@ export const useDataStores = defineStore('data', {
         getToken() {
             const token = localStorage.getItem("token");
             if (token !== undefined) {
-                return token;
+                this.currentServerToken = token;
+            } else {
+                this.tokenInitialised = false;
             }
-            this.tokenInitialised = false;
-            return false;
+        },
+        setCurrentServerUrl() {
+            this.currentServerUrl = "https://nask.8279.ch";
+        },
+        setServerUrl(url=null) {
+            if (url===null) {
+                this.currentServerUrl = "https://nask.8279.ch";
+            } else {
+                this.currentServerUrl = url
+            }
         },
         setToken (token=null) {
             if (token===null) {
-                axios.get("https://nask.8279.ch/api/token").then((r) => {
+                axios.get(this.currentServerUrl + "/api/token").then((r) => {
                     token = r.data.token
                     localStorage.setItem("token", token);
                     this.tokenInitialised = true;
@@ -73,17 +87,17 @@ export const useDataStores = defineStore('data', {
             } else {
                 localStorage.setItem("token", token);
                 this.init();
+                this.tokenInitialised = true;
                 router.push('/')
             }
         },
         updateNotes () {
-            const token = this.getToken();
-            if (token) {
-                axios.post("https://nask.8279.ch/api/notes",{
+            if (this.currentServerToken) {
+                axios.post(this.currentServerUrl + "/api/notes",{
                     notes: JSON.stringify(this.storedNotes)
                 }, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${this.currentServerToken}`,
                         'Content-Type': 'multipart/form-data'
                     }
                 }).then(() => {
@@ -110,13 +124,12 @@ export const useDataStores = defineStore('data', {
             this.updateNotes();
         },
         updateTasks () {
-            const token = this.getToken();
-            if (token) {
-                axios.post("https://nask.8279.ch/api/tasks",{
+            if (this.currentServerToken) {
+                axios.post(this.currentServerUrl + "/api/tasks",{
                     tasks: JSON.stringify(this.storedTasks)
                 }, {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${this.currentServerToken}`,
                         'Content-Type': 'multipart/form-data'
                     }
                 }).then(() => {

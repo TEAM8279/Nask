@@ -141,8 +141,13 @@ div.main {
 import {useDataStores} from "@/stores/DataStore";
 import {storeToRefs} from "pinia";
 import {ref} from "vue";
+import router from "@/router";
 
 const dataStore = useDataStores();
+
+if (!dataStore.tokenInitialised) {
+  router.push('/addtoken')
+}
 
 const edition = ref(false);
 const oldNote = ref({})
